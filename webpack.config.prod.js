@@ -23,24 +23,35 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
-      }
+      },
+      'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
     }),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
         warnings: false
       }
     }),
-    new webpack.NoErrorsPlugin(),
     HTMLWebpackPluginConfig
   ],
   module: {
-    loaders: [{
-      test: /\.jsx?/,
-      loader: 'babel',
-      query: {
-        presets: ['es2015', 'react']
+    loaders: [
+      {
+        test: /\.jsx?/,
+        loader: 'babel',
+        include: path.join(__dirname, 'src'),
+        exclude: [/(node_modules|bower_components)/, /\.test\.jsx?$/],
+        query: {
+          presets: ['airbnb', 'react', 'es2015', 'stage-0']
+        },
+        plugins: ['transform-object-rest-spread'],
       },
-      exclude: /node_modules/
-    }]
+      { test: /\.woff2?$/,      loader: "url-loader?limit=10000&minetype=application/font-woff" },
+      { test: /\.ttf$/,         loader: "file-loader" },
+      { test: /\.eot$/,         loader: "file-loader" },
+      { test: /\.svg$/,         loader: "file-loader" },
+      { test: /\.(png|gif)$/,   loader: "file-loader" },
+      { test: /\.(sass|scss)$/, loader: 'style!css!sass'},
+      { test: /\.json$/,        loader: "json-loader"}
+    ]
   }
 };
